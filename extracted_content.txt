@@ -1,0 +1,106 @@
+              RINGKASAN TUBES
+  MATA KULIAH ALGORITMA DAN PEMROGRAMAN
+
+
+
+
+                          Penyusun :
+       1.​ Bagas Idden L.​   ​      ​   ( 4.33.25.2.05 )
+       2.​ Muhammad Baruna Saylendra​   ( 4.33.25.2.14 )
+       3.​ Muhammad Fadhil​ ​       ​   ( 4.33.25.2.15 )
+       4.​ Naufal Azka F.​   ​      ​   ( 4.33.25.2.16 )
+       5.​ Yusuf Ricky H.​   ​      ​   ( 4.33.25.2.24 )
+
+
+
+
+PROGRAM STUDI TEKNOLOGI REKAYASA KOMPUTER
+        POLITEKNIK NEGERI SEMARANG
+                    2025
+                               Ringkasan Tugas Besar
+
+Kami akan membuat Program sentiment analysis Tokopedia dengan Naïve Bayes
+Multinomial yang:
+
+   ●​ Menganalisis 1000+ reviews dari Google Play Store​
+
+   ●​ Mencapai 90% accuracy dalam klasifikasi sentimen​
+
+   ●​ Mengidentifikasi review negatif (58.9%) dan positif (41.1%)
+
+Technology Stack:
+
+   ●​ Python - Programming language​
+
+   ●​ pandas, numpy - Data processing​
+
+   ●​ scikit-learn - Machine learning​
+
+   ●​ NLTK, Sastrawi - NLP for Indonesian​
+
+   ●​ matplotlib, seaborn - Visualization​
+
+   ●​ google-play-scraper - Data collection​
+
+
+
+
+Langkah-langkah:
+
+   ●​ Langkah Pertama - Setup:
+         1.​ Buat folder project & virtual environment​
+
+          2.​ Install semua dependencies dari requirements.txt​
+
+          3.​ Download NLTK data​
+
+          4.​ Create project folder structure​
+
+   ●​ Langkah Kedua - Data Collection:
+         1.​ Implement data_collector.py​
+       2.​ Scrape 1000 reviews dari Tokopedia Play Store​
+
+       3.​ Save ke tokopedia_reviews_raw.csv​
+
+●​ Langkah Ketiga - Preprocessing:
+      1.​ Implement data_labeler.py - auto label by rating​
+
+       2.​ Implement preprocessor.py - 6 stages pipeline​
+
+       3.​ Process all 1000 reviews​
+
+       4.​ Save ke tokopedia_reviews_processed.csv​
+
+●​ Langkah Keempat - Feature Extraction :
+      1.​ Implement feature_extractor.py​
+
+       2.​ Create TF-IDF vectorizer​
+
+       3.​ Generate feature matrix​
+
+●​ Langkah Kelima - Model Training:
+      1.​ Implement naive_bayes_classifier.py​
+
+       2.​ Train-test split (80:20)​
+
+       3.​ Train Naive Bayes model​
+
+       4.​ Generate predictions​
+
+●​ Langkah Keenam - Evaluation :
+      1.​ Calculate accuracy, precision, recall, F1-score​
+
+       2.​ Create confusion matrix​
+
+       3.​ Generate classification report​
+
+       4.​ Analyze results​
+
+●​ Langkah Ketujuh - Visualization & Reporting :
+      1.​ Create charts & graphs​
+
+       2.​ Generate sentiment distribution pie charts​
+3.​ Create word clouds​
+
+4.​ Write comprehensive report​
+

@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Tokopedia Sentiment Analysis</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <header>
+        <h1>Tokopedia Sentiment Analysis</h1>
+        <p>Enter a review to predict its sentiment (Positive/Negative)</p>
+      </header>
+
+      <main>
+        <div class="input-group">
+          <textarea
+            id="reviewInput"
+            placeholder="Type your review here... (e.g., 'Barang bagus, pengiriman cepat!')"
+          ></textarea>
+        </div>
+        <button id="predictBtn">Analyze Sentiment</button>
+
+        <div id="result" class="result-container hidden">
+          <h2>Prediction Result</h2>
+          <div id="sentimentResult" class="sentiment-badge"></div>
+          <div class="probability-container">
+            <div class="prob-item">
+                <span>Positive:</span>
+                <span id="positiveProb" class="prob-value positive-text"></span>
+            </div>
+            <div class="prob-item">
+                <span>Negative:</span>
+                <span id="negativeProb" class="prob-value negative-text"></span>
+            </div>
+          </div>
+          <p class="processed-text">Processed Text: <span id="processedText"></span></p>
+        </div>
+      </main>
+
+      <footer>
+        <p>&copy; 2025 Kelompok Oke Gas</p>
+      </footer>
+    </div>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
+  </body>
+</html>
