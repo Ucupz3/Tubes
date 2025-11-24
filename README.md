@@ -25,9 +25,9 @@ I have implemented the sentiment analysis program for Tokopedia reviews as reque
 Ensure you have Python installed. Create a virtual environment and install dependencies:
 
 ```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
-pip install -r requirements.txt
+python -m venv venv source venv/bin/activate  # On Windows
+python -m venv venv # on Linux
+.venv/bin/pip install -r requirements.txt
 ```
 
 ### 2. Run the Pipeline
@@ -35,7 +35,7 @@ pip install -r requirements.txt
 To collect data, train the model, and generate visualizations, run:
 
 ```bash
-python main.py
+.venv/bin/python main.py
 ```
 
 This will:
@@ -50,7 +50,7 @@ This will:
 To start the web application for sentiment prediction:
 
 ```bash
-python app.py
+.venv/bin/python app.py
 ```
 
 Open your browser and go to `http://127.0.0.1:5000`. You can enter a review and get a sentiment prediction.
