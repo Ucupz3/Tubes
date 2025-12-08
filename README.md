@@ -28,6 +28,7 @@ Ensure you have Python installed. Create a virtual environment and install depen
 python -m venv venv source venv/bin/activate  # On Windows
 python -m venv venv # on Linux
 venv/bin/pip install -r requirements.txt
+pip install -r requirements.txt # on windows
 ```
 
 ### 2. Run the Pipeline
@@ -36,6 +37,7 @@ To collect data, train the model, and generate visualizations, run:
 
 ```bash
 venv/bin/python main.py
+py main.py # on windows
 ```
 
 This will:
@@ -51,6 +53,7 @@ To start the web application for sentiment prediction:
 
 ```bash
 venv/bin/python app.py
+py app.py # on windows
 ```
 
 Open your browser and go to `http://127.0.0.1:5000`. You can enter a review and get a sentiment prediction.
