@@ -596,6 +596,82 @@
         }
       }
 
+      // Improved sentiment detection function
+      function analyzeSentiment(review) {
+        const lowerReview = review.toLowerCase();
+        
+        // Kata-kata positif dan negatif dalam Bahasa Indonesia
+        const positiveWords = ['bagus', 'baik', 'cepat', 'mantap', 'recommended', 'puas', 'ramah', 'sesuai', 
+                              'memuaskan', 'terima kasih', 'sukses', 'hebat', 'keren', 'suka', 'senang',
+                              'responsif', 'profesional', 'berkualitas', 'murah', 'worth it', 'segera'];
+        
+        const negativeWords = ['jelek', 'buruk', 'lambat', 'kecewa', 'rusak', 'tidak sesuai', 'mahal',
+                              'gagal', 'susah', 'problem', 'masalah', 'komplain', 'mengecewakan',
+                              'pelit', 'tidak ramah', 'ketipu', 'menipu', 'penipu', 'scam', 'hoax',
+                              'fake', 'palsu', 'tolong', 'help', 'bosan', 'lelah'];
+        
+        // Hitung kemunculan kata
+        let positiveScore = 0;
+        let negativeScore = 0;
+        
+        positiveWords.forEach(word => {
+          if (lowerReview.includes(word)) {
+            positiveScore++;
+          }
+        });
+        
+        negativeWords.forEach(word => {
+          if (lowerReview.includes(word)) {
+            negativeScore++;
+          }
+        });
+        
+        // Debug logging
+        console.log('Positive words found:', positiveScore);
+        console.log('Negative words found:', negativeScore);
+        
+        // Logika penentuan sentimen yang lebih baik
+        let randomPos, randomNeg, sentiment;
+        
+        // Jika ada kata positif dan TIDAK ada kata negatif → POSITIF TINGGI
+        if (positiveScore > 0 && negativeScore === 0) {
+          randomPos = 0.8 + (Math.random() * 0.15); // 80-95%
+          randomNeg = 1 - randomPos;
+          sentiment = 'Positive';
+        }
+        // Jika ada kata negatif dan TIDAK ada kata positif → NEGATIF TINGGI
+        else if (negativeScore > 0 && positiveScore === 0) {
+          randomNeg = 0.8 + (Math.random() * 0.15); // 80-95%
+          randomPos = 1 - randomNeg;
+          sentiment = 'Negative';
+        }
+        // Jika ada keduanya (campuran) atau tidak ada keduanya
+        else {
+          // Hitung skor net
+          const netScore = positiveScore - negativeScore;
+          
+          if (netScore > 0) {
+            // Lebih banyak positif
+            randomPos = 0.6 + (Math.random() * 0.2); // 60-80%
+            randomNeg = 1 - randomPos;
+            sentiment = 'Positive';
+          } else if (netScore < 0) {
+            // Lebih banyak negatif
+            randomNeg = 0.6 + (Math.random() * 0.2); // 60-80%
+            randomPos = 1 - randomNeg;
+            sentiment = 'Negative';
+          } else {
+            // Netral/sama/atau tidak ada kata yang terdeteksi
+            // Berikan probabilitas yang seimbang
+            randomPos = 0.4 + (Math.random() * 0.2); // 40-60%
+            randomNeg = 1 - randomPos;
+            sentiment = randomPos > 0.5 ? 'Positive' : 'Negative';
+          }
+        }
+        
+        return { randomPos, randomNeg, sentiment };
+      }
+
       // Reset function
       function resetForm() {
         document.getElementById('result').classList.add('hidden');
@@ -627,15 +703,32 @@
         
         setLoading(true);
         
-        // Simulate API call (replace with actual API)
+        // Simulasi API call dengan analisis sentimen yang lebih baik
         setTimeout(() => {
-          const randomPos = Math.random() * 0.5 + 0.3;
-          const randomNeg = 1 - randomPos;
-          const sentiment = randomPos > 0.5 ? 'Positive' : 'Negative';
+          const result = analyzeSentiment(review);
           
-          showResult(randomPos, randomNeg, sentiment);
+          showResult(result.randomPos, result.randomNeg, result.sentiment);
           setLoading(false);
-        }, 1500);
+        }, 800); // Waktu lebih cepat karena hanya simulasi
+        
+        /* 
+        // UNCOMMENT UNTUK API ASLI:
+        fetch('/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ review: review })
+        })
+        .then(response => response.json())
+        .then(data => {
+          showResult(data.positive, data.negative, data.sentiment);
+          setLoading(false);
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('Failed to analyze. Please try again.');
+          setLoading(false);
+        });
+        */
       });
 
       // Reset button click
