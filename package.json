@@ -1,0 +1,26 @@
+{
+  "name": "tubes",
+  "version": "1.0.0",
+  "description": "I have implemented the sentiment analysis program for Tokopedia reviews as requested. The project includes data collection, preprocessing, feature extraction, model training, evaluation, visualization, and a web interface.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "tailwindcss -i ./static/src/input.css -o ./static/css/output.css --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/chennn311/Tubes.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/chennn311/Tubes/issues"
+  },
+  "homepage": "https://github.com/chennn311/Tubes#readme",
+  "devDependencies": {
+    "autoprefixer": "^10.4.22",
+    "postcss": "^8.5.6",
+    "tailwindcss": "^3.4.18"
+  }
+}

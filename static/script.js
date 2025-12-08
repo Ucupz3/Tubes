@@ -25,23 +25,26 @@ document.getElementById('predictBtn').addEventListener('click', async () => {
         const data = await response.json();
 
         if (response.ok) {
+
             resultContainer.classList.remove('hidden');
             sentimentResult.textContent = data.sentiment;
-            
-            document.getElementById('positiveProb').textContent = `${data.positive_prob}%`;
-            document.getElementById('negativeProb').textContent = `${data.negative_prob}%`;
-            
+
+            // FIX DI SINI
+            updateCharts(data.positive_prob / 100, data.negative_prob / 100);
+
             processedText.textContent = data.processed_text;
 
-            sentimentResult.className = 'sentiment-badge'; // Reset classes
+            sentimentResult.className = 'sentiment-badge';
             if (data.sentiment === 'positive') {
                 sentimentResult.classList.add('positive');
             } else {
                 sentimentResult.classList.add('negative');
             }
+
         } else {
             alert('Error: ' + data.error);
         }
+
     } catch (error) {
         console.error('Error:', error);
         alert('An error occurred. Please try again.');
