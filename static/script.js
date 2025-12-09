@@ -1,6 +1,7 @@
 document.getElementById('predictBtn').addEventListener('click', async () => {
     const text = document.getElementById('reviewInput').value;
     const resultContainer = document.getElementById('result');
+    const placeholder = document.getElementById('placeholder');
     const sentimentResult = document.getElementById('sentimentResult');
     const processedText = document.getElementById('processedText');
     const btn = document.getElementById('predictBtn');
@@ -25,7 +26,8 @@ document.getElementById('predictBtn').addEventListener('click', async () => {
         const data = await response.json();
 
         if (response.ok) {
-
+            
+            placeholder.classList.add('hidden');
             resultContainer.classList.remove('hidden');
             sentimentResult.textContent = data.sentiment;
 

@@ -1,543 +1,580 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Tokopedia Sentiment Analysis</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
-      rel="stylesheet"
-    />
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              inter: ['Inter', 'sans-serif'],
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tokopedia Sentiment Analysis</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            inter: ['Inter', 'sans-serif'],
+          },
+          animation: {
+            'float': 'float 6s ease-in-out infinite',
+            'float-delayed': 'float 6s ease-in-out 2s infinite',
+            'pulse-slow': 'pulse 3s ease-in-out infinite',
+            'slide-up': 'slideUp 0.5s ease-out forwards',
+            'fade-in': 'fadeIn 0.6s ease-out forwards',
+            'scale-in': 'scaleIn 0.4s ease-out forwards',
+            'bounce-in': 'bounceIn 0.6s ease-out forwards',
+            'spin-slow': 'spin 3s linear infinite',
+            'gradient': 'gradient 8s ease infinite',
+          },
+          keyframes: {
+            float: {
+              '0%, 100%': { transform: 'translateY(0px)' },
+              '50%': { transform: 'translateY(-20px)' },
             },
-            animation: {
-              'float': 'float 6s ease-in-out infinite',
-              'float-delayed': 'float 6s ease-in-out 2s infinite',
-              'pulse-slow': 'pulse 3s ease-in-out infinite',
-              'slide-up': 'slideUp 0.5s ease-out forwards',
-              'fade-in': 'fadeIn 0.6s ease-out forwards',
-              'scale-in': 'scaleIn 0.4s ease-out forwards',
-              'bounce-in': 'bounceIn 0.6s ease-out forwards',
-              'spin-slow': 'spin 3s linear infinite',
-              'gradient': 'gradient 8s ease infinite',
+            slideUp: {
+              '0%': { opacity: '0', transform: 'translateY(30px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
             },
-            keyframes: {
-              float: {
-                '0%, 100%': { transform: 'translateY(0px)' },
-                '50%': { transform: 'translateY(-20px)' },
-              },
-              slideUp: {
-                '0%': { opacity: '0', transform: 'translateY(30px)' },
-                '100%': { opacity: '1', transform: 'translateY(0)' },
-              },
-              fadeIn: {
-                '0%': { opacity: '0' },
-                '100%': { opacity: '1' },
-              },
-              scaleIn: {
-                '0%': { opacity: '0', transform: 'scale(0.8)' },
-                '100%': { opacity: '1', transform: 'scale(1)' },
-              },
-              bounceIn: {
-                '0%': { opacity: '0', transform: 'scale(0.3)' },
-                '50%': { transform: 'scale(1.05)' },
-                '70%': { transform: 'scale(0.9)' },
-                '100%': { opacity: '1', transform: 'scale(1)' },
-              },
-              gradient: {
-                '0%, 100%': { backgroundPosition: '0% 50%' },
-                '50%': { backgroundPosition: '100% 50%' },
-              },
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            scaleIn: {
+              '0%': { opacity: '0', transform: 'scale(0.8)' },
+              '100%': { opacity: '1', transform: 'scale(1)' },
+            },
+            bounceIn: {
+              '0%': { opacity: '0', transform: 'scale(0.3)' },
+              '50%': { transform: 'scale(1.05)' },
+              '70%': { transform: 'scale(0.9)' },
+              '100%': { opacity: '1', transform: 'scale(1)' },
+            },
+            gradient: {
+              '0%, 100%': { backgroundPosition: '0% 50%' },
+              '50%': { backgroundPosition: '100% 50%' },
             },
           },
         },
-      }
-    </script>
-    <style>
-      body {
-        font-family: 'Inter', sans-serif;
-      }
-      
-      .gradient-bg {
-        background: linear-gradient(-45deg, #059669, #10b981, #34d399, #059669);
-        background-size: 400% 400%;
-        animation: gradient 15s ease infinite;
-      }
-      
-      .glass-card {
-        background: rgba(255, 255, 255, 0.95);
-        backdrop-filter: blur(20px);
-        -webkit-backdrop-filter: blur(20px);
-      }
-      
-      .glass-header {
-        background: rgba(255, 255, 255, 0.9);
-        backdrop-filter: blur(10px);
-        -webkit-backdrop-filter: blur(10px);
-      }
-      
-      .input-glow:focus {
-        box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
-      }
-      
-      .btn-shine {
-        position: relative;
-        overflow: hidden;
-      }
-      
-      .btn-shine::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(
-          120deg,
+      },
+    }
+  </script>
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .gradient-bg {
+      background: linear-gradient(-45deg, #059669, #10b981, #34d399, #059669);
+      background-size: 400% 400%;
+      animation: gradient 15s ease infinite;
+    }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .glass-header {
+      background: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .input-glow:focus {
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.2);
+    }
+
+    .btn-shine {
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-shine::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(120deg,
           transparent,
           rgba(255, 255, 255, 0.3),
-          transparent
-        );
-        transition: 0.5s;
-      }
-      
-      .btn-shine:hover::before {
-        left: 100%;
-      }
-      
-      .floating-shape {
-        position: absolute;
-        border-radius: 50%;
-        opacity: 0.1;
-      }
-      
-      .chart-container {
-        position: relative;
-        transition: all 0.3s ease;
-      }
-      
-      .chart-container:hover {
-        transform: scale(1.05);
-      }
-      
-      .sentiment-card {
-        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      }
-      
-      .sentiment-card:hover {
-        transform: translateY(-5px);
-      }
-      
-      .typing-indicator span {
-        animation: typing 1.4s infinite ease-in-out;
-      }
-      
-      .typing-indicator span:nth-child(2) {
-        animation-delay: 0.2s;
-      }
-      
-      .typing-indicator span:nth-child(3) {
-        animation-delay: 0.4s;
-      }
-      
-      @keyframes typing {
-        0%, 60%, 100% { transform: translateY(0); }
-        30% { transform: translateY(-10px); }
-      }
-      
-      .result-positive {
-        background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
-        border-left: 4px solid #059669;
-      }
-      
-      .result-negative {
-        background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-        border-left: 4px solid #dc2626;
-      }
-      
-      .progress-ring {
-        transition: stroke-dashoffset 1s ease-in-out;
-      }
-      
-      textarea::-webkit-scrollbar {
-        width: 6px;
-      }
-      
-      textarea::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 10px;
-      }
-      
-      textarea::-webkit-scrollbar-thumb {
-        background: #10b981;
-        border-radius: 10px;
-      }
-      
-      .emoji-bounce {
-        display: inline-block;
-        animation: bounceIn 0.6s ease-out;
-      }
-    </style>
-  </head>
-  <body class="gradient-bg min-h-screen font-inter overflow-x-hidden">
-    <!-- Floating Decorative Shapes -->
-    <div class="fixed inset-0 overflow-hidden pointer-events-none">
-      <div class="floating-shape w-96 h-96 bg-white -top-20 -left-20 animate-float"></div>
-      <div class="floating-shape w-72 h-72 bg-white top-1/2 -right-20 animate-float-delayed"></div>
-      <div class="floating-shape w-64 h-64 bg-white bottom-20 left-1/4 animate-float"></div>
-      <div class="floating-shape w-48 h-48 bg-white top-1/4 right-1/3 animate-float-delayed"></div>
-    </div>
+          transparent);
+      transition: 0.5s;
+    }
 
-    <div class="relative z-10 min-h-screen flex flex-col">
-      <!-- Header -->
-      <header class="glass-header sticky top-0 z-50 border-b border-white/20 shadow-lg">
-        <div class="container mx-auto px-6 py-4">
-          <div class="flex items-center justify-between">
-            <div class="flex items-center gap-4">
-              <!-- Logo with Glow Effect -->
-              <div class="relative group">
-                <div class="absolute inset-0 bg-green-400 rounded-xl blur-lg opacity-40 group-hover:opacity-60 transition-opacity"></div>
-                <div class="relative bg-gradient-to-br from-green-500 to-emerald-600 p-3 rounded-xl shadow-lg transform group-hover:scale-105 transition-transform">
-                  <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-                  </svg>
-                </div>
+    .btn-shine:hover::before {
+      left: 100%;
+    }
+
+    .floating-shape {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.1;
+    }
+
+    .chart-container {
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .chart-container:hover {
+      transform: scale(1.05);
+    }
+
+    .sentiment-card {
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .sentiment-card:hover {
+      transform: translateY(-5px);
+    }
+
+    .typing-indicator span {
+      animation: typing 1.4s infinite ease-in-out;
+    }
+
+    .typing-indicator span:nth-child(2) {
+      animation-delay: 0.2s;
+    }
+
+    .typing-indicator span:nth-child(3) {
+      animation-delay: 0.4s;
+    }
+
+    @keyframes typing {
+
+      0%,
+      60%,
+      100% {
+        transform: translateY(0);
+      }
+
+      30% {
+        transform: translateY(-10px);
+      }
+    }
+
+    .result-positive {
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+      border-left: 4px solid #059669;
+    }
+
+    .result-negative {
+      background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+      border-left: 4px solid #dc2626;
+    }
+
+    .progress-ring {
+      transition: stroke-dashoffset 1s ease-in-out;
+    }
+
+    textarea::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    textarea::-webkit-scrollbar-track {
+      background: #f1f1f1;
+      border-radius: 10px;
+    }
+
+    textarea::-webkit-scrollbar-thumb {
+      background: #10b981;
+      border-radius: 10px;
+    }
+
+    .emoji-bounce {
+      display: inline-block;
+      animation: bounceIn 0.6s ease-out;
+    }
+  </style>
+</head>
+
+<body class="gradient-bg min-h-screen font-inter overflow-x-hidden">
+  <!-- Floating Decorative Shapes -->
+  <div class="fixed inset-0 overflow-hidden pointer-events-none">
+    <div class="floating-shape w-96 h-96 bg-white -top-20 -left-20 animate-float"></div>
+    <div class="floating-shape w-72 h-72 bg-white top-1/2 -right-20 animate-float-delayed"></div>
+    <div class="floating-shape w-64 h-64 bg-white bottom-20 left-1/4 animate-float"></div>
+    <div class="floating-shape w-48 h-48 bg-white top-1/4 right-1/3 animate-float-delayed"></div>
+  </div>
+
+  <div class="relative z-10 min-h-screen flex flex-col">
+    <!-- Header -->
+    <header class="glass-header sticky top-0 z-50 border-b border-white/20 shadow-lg">
+      <div class="container mx-auto px-6 py-4">
+        <div class="flex items-center justify-between">
+          <div class="flex items-center gap-4">
+            <!-- Logo with Glow Effect -->
+            <div class="relative group">
+              <div
+                class="absolute inset-0 bg-green-400 rounded-xl blur-lg opacity-40 group-hover:opacity-60 transition-opacity">
               </div>
-              <div>
-                <h1 class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">
-                  Tokopedia Sentiment
-                </h1>
-                <p class="text-gray-500 text-sm md:text-base font-medium">
-                  AI-Powered Review Analysis
-                </p>
+              <div
+                class="relative bg-gradient-to-br from-green-500 to-emerald-600 p-3 rounded-xl shadow-lg transform group-hover:scale-105 transition-transform">
+                <svg class="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
               </div>
             </div>
-            
-            <!-- Stats Badge -->
-            <div class="hidden md:flex items-center gap-4">
-              <div class="flex items-center gap-2 bg-green-50 px-4 py-2 rounded-full border border-green-200">
-                <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-                <span class="text-green-700 font-medium text-sm">AI Model Active</span>
-              </div>
+            <div>
+              <h1
+                class="text-2xl md:text-3xl font-bold bg-gradient-to-r from-green-600 to-emerald-500 bg-clip-text text-transparent">
+                Tokopedia Sentiment
+              </h1>
+              <p class="text-gray-500 text-sm md:text-base font-medium">
+                AI-Powered Review Analysis
+              </p>
+            </div>
+          </div>
+
+          <!-- Stats Badge -->
+          <div class="hidden md:flex items-center gap-4">
+            <div class="flex items-center gap-2 bg-green-50 px-4 py-2 rounded-full border border-green-200">
+              <div class="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+              <span class="text-green-700 font-medium text-sm">AI Model Active</span>
             </div>
           </div>
         </div>
-      </header>
+      </div>
+    </header>
 
-      <!-- Main Content -->
-      <main class="flex-1 container mx-auto px-4 py-8">
-        <div id="mainContainer" class="glass-card rounded-3xl shadow-2xl p-6 md:p-10 transition-all duration-700 ease-out">
-          
-          <!-- Welcome Message -->
-          <div id="welcomeSection" class="text-center mb-8 animate-fade-in">
-            <div class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full mb-4 shadow-lg">
-              <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
-              </svg>
-            </div>
-            <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Analyze Your Review</h2>
-            <p class="text-gray-500 max-w-md mx-auto">
-              Enter a product review below and let our AI determine if it's positive or negative
-            </p>
+    <!-- Main Content -->
+    <main class="flex-1 container mx-auto px-4 py-8">
+      <div id="mainContainer"
+        class="glass-card rounded-3xl shadow-2xl p-6 md:p-10 transition-all duration-700 ease-out">
+
+        <!-- Welcome Message -->
+        <div id="welcomeSection" class="text-center mb-8 animate-fade-in">
+          <div
+            class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full mb-4 shadow-lg">
+            <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+            </svg>
           </div>
+          <h2 class="text-2xl md:text-3xl font-bold text-gray-800 mb-2">Analyze Your Review</h2>
+          <p class="text-gray-500 max-w-md mx-auto">
+            Enter a product review below and let our AI determine if it's positive or negative
+          </p>
+        </div>
 
-          <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            <!-- Input Section -->
-            <div class="animate-slide-up" style="animation-delay: 0.1s;">
-              <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6 border border-gray-200">
-                <label class="flex items-center gap-2 text-gray-700 font-semibold mb-4">
-                  <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"/>
-                  </svg>
-                  Your Review
-                </label>
-                
-                <div class="relative">
-                  <textarea
-                    id="reviewInput"
-                    maxlength="255"
-                    placeholder="Contoh: Barang sampai dengan cepat, kualitas bagus sesuai deskripsi. Penjual sangat responsif!"
-                    class="w-full h-48 p-4 rounded-xl border-2 border-gray-200 resize-none focus:outline-none focus:border-green-500 input-glow transition-all duration-300 text-gray-700 placeholder-gray-400 bg-white"
-                  ></textarea>
-                  
-                  <!-- Character Counter -->
-                  <div class="absolute bottom-3 right-3 flex items-center gap-2">
-                    <span id="charCount" class="text-sm text-gray-400 font-medium">0/255</span>
-                  </div>
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+          <!-- Input Section -->
+          <div class="animate-slide-up" style="animation-delay: 0.1s;">
+            <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6 border border-gray-200">
+              <label class="flex items-center gap-2 text-gray-700 font-semibold mb-4">
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+                </svg>
+                Your Review
+              </label>
+
+              <div class="relative">
+                <textarea id="reviewInput" maxlength="255"
+                  placeholder="Contoh: Barang sampai dengan cepat, kualitas bagus sesuai deskripsi. Penjual sangat responsif!"
+                  class="w-full h-48 p-4 rounded-xl border-2 border-gray-200 resize-none focus:outline-none focus:border-green-500 input-glow transition-all duration-300 text-gray-700 placeholder-gray-400 bg-white"></textarea>
+
+                <!-- Character Counter -->
+                <div class="absolute bottom-3 right-3 flex items-center gap-2">
+                  <span id="charCount" class="text-sm text-gray-400 font-medium">0/255</span>
                 </div>
-                
-                <!-- Action Buttons -->
-                <div class="flex gap-3 mt-4">
-                  <button 
-                    id="predictBtn" 
-                    class="flex-1 btn-shine bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl hover:from-green-600 hover:to-emerald-700 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2"
-                  >
-                    <svg id="btnIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-                    </svg>
-                    <span id="btnText">Analyze Sentiment</span>
+              </div>
+
+              <!-- Action Buttons -->
+              <div class="flex gap-3 mt-4">
+                <button id="predictBtn"
+                  class="flex-1 btn-shine bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl hover:from-green-600 hover:to-emerald-700 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2">
+                  <svg id="btnIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                  <span id="btnText">Analyze Sentiment</span>
+                </button>
+
+                <button id="resetBtn"
+                  class="bg-gray-100 text-gray-600 font-semibold py-4 px-4 rounded-xl hover:bg-gray-200 active:scale-[0.98] transition-all duration-300"
+                  title="Reset">
+                  <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                      d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                  </svg>
+                </button>
+              </div>
+
+              <!-- Quick Examples -->
+              <div class="mt-6">
+                <p class="text-sm text-gray-500 mb-3 font-medium">💡 Try these examples:</p>
+                <div class="flex flex-wrap gap-2">
+                  <button
+                    class="example-btn text-xs bg-green-50 text-green-700 px-3 py-2 rounded-lg hover:bg-green-100 transition-colors border border-green-200">
+                    Barang bagus, pengiriman cepat! 👍
                   </button>
-                  
-                  <button 
-                    id="resetBtn" 
-                    class="bg-gray-100 text-gray-600 font-semibold py-4 px-4 rounded-xl hover:bg-gray-200 active:scale-[0.98] transition-all duration-300"
-                    title="Reset"
-                  >
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>
-                    </svg>
+                  <button
+                    class="example-btn text-xs bg-red-50 text-red-700 px-3 py-2 rounded-lg hover:bg-red-100 transition-colors border border-red-200">
+                    Kecewa, barang tidak sesuai 😞
+                  </button>
+                  <button
+                    class="example-btn text-xs bg-green-50 text-green-700 px-3 py-2 rounded-lg hover:bg-green-100 transition-colors border border-green-200">
+                    Seller ramah, recommended!
                   </button>
                 </div>
-                
-                <!-- Quick Examples -->
-                <div class="mt-6">
-                  <p class="text-sm text-gray-500 mb-3 font-medium">💡 Try these examples:</p>
-                  <div class="flex flex-wrap gap-2">
-                    <button class="example-btn text-xs bg-green-50 text-green-700 px-3 py-2 rounded-lg hover:bg-green-100 transition-colors border border-green-200">
-                      Barang bagus, pengiriman cepat! 👍
-                    </button>
-                    <button class="example-btn text-xs bg-red-50 text-red-700 px-3 py-2 rounded-lg hover:bg-red-100 transition-colors border border-red-200">
-                      Kecewa, barang tidak sesuai 😞
-                    </button>
-                    <button class="example-btn text-xs bg-green-50 text-green-700 px-3 py-2 rounded-lg hover:bg-green-100 transition-colors border border-green-200">
-                      Seller ramah, recommended!
-                    </button>
+              </div>
+            </div>
+            <div id="downloadBtn" class="hidden flex justify-end items-center gap-4 animate-scale-in mt-5">
+              <span class="text-lg font-bold text-gray-800">
+                Analyzed Reviews :
+              </span>
+
+              <button id="download"
+                class="btn-shine bg-gradient-to-r from-green-500 to-emerald-600 text-white font-semibold py-4 px-6 rounded-xl shadow-lg hover:shadow-xl hover:from-green-600 hover:to-emerald-700 active:scale-[0.98] transition-all duration-300 flex items-center justify-center gap-2">
+                Download CSV
+              </button>
+            </div>
+          </div>
+
+          <!-- Result Section -->
+          <div id="result" class="hidden animate-scale-in">
+            <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6 border border-gray-200 h-full">
+              <div class="flex items-center gap-2 mb-6">
+                <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
+                <h3 class="text-gray-700 font-semibold">Analysis Result</h3>
+              </div>
+
+              <!-- Sentiment Badge -->
+              <div id="sentimentResult" class="sentiment-card rounded-xl p-5 mb-6 text-center">
+                <!-- Content will be inserted by JS -->
+              </div>
+
+              <!-- Charts Container -->
+              <div class="grid grid-cols-2 gap-6 mb-6">
+                <!-- Positive Chart -->
+                <div class="chart-container bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                  <div class="relative w-28 h-28 mx-auto">
+                    <canvas id="positiveChart"></canvas>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                      <span id="posText" class="text-xl font-bold text-green-600">0%</span>
+                    </div>
+                  </div>
+                  <div class="text-center mt-3">
+                    <span class="inline-flex items-center gap-1 text-sm font-semibold text-green-600">
+                      <span class="emoji-bounce">😊</span> Positive
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Negative Chart -->
+                <div class="chart-container bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                  <div class="relative w-28 h-28 mx-auto">
+                    <canvas id="negativeChart"></canvas>
+                    <div class="absolute inset-0 flex items-center justify-center">
+                      <span id="negText" class="text-xl font-bold text-red-600">0%</span>
+                    </div>
+                  </div>
+                  <div class="text-center mt-3">
+                    <span class="inline-flex items-center gap-1 text-sm font-semibold text-red-600">
+                      <span class="emoji-bounce">😔</span> Negative
+                    </span>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <!-- Result Section -->
-            <div id="result" class="hidden animate-scale-in">
-              <div class="bg-gradient-to-br from-gray-50 to-gray-100 rounded-2xl p-6 border border-gray-200 h-full">
-                <div class="flex items-center gap-2 mb-6">
-                  <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                  </svg>
-                  <h3 class="text-gray-700 font-semibold">Analysis Result</h3>
+              <!-- Confidence Bar -->
+              <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
+                <div class="flex justify-between items-center mb-2">
+                  <span class="text-sm font-medium text-gray-600">Confidence Level</span>
+                  <span id="confidenceText" class="text-sm font-bold text-green-600">0%</span>
                 </div>
-                
-                <!-- Sentiment Badge -->
-                <div id="sentimentResult" class="sentiment-card rounded-xl p-5 mb-6 text-center">
-                  <!-- Content will be inserted by JS -->
-                </div>
-                
-                <!-- Charts Container -->
-                <div class="grid grid-cols-2 gap-6 mb-6">
-                  <!-- Positive Chart -->
-                  <div class="chart-container bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                    <div class="relative w-28 h-28 mx-auto">
-                      <canvas id="positiveChart"></canvas>
-                      <div class="absolute inset-0 flex items-center justify-center">
-                        <span id="posText" class="text-xl font-bold text-green-600">0%</span>
-                      </div>
-                    </div>
-                    <div class="text-center mt-3">
-                      <span class="inline-flex items-center gap-1 text-sm font-semibold text-green-600">
-                        <span class="emoji-bounce">😊</span> Positive
-                      </span>
-                    </div>
-                  </div>
-
-                  <!-- Negative Chart -->
-                  <div class="chart-container bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                    <div class="relative w-28 h-28 mx-auto">
-                      <canvas id="negativeChart"></canvas>
-                      <div class="absolute inset-0 flex items-center justify-center">
-                        <span id="negText" class="text-xl font-bold text-red-600">0%</span>
-                      </div>
-                    </div>
-                    <div class="text-center mt-3">
-                      <span class="inline-flex items-center gap-1 text-sm font-semibold text-red-600">
-                        <span class="emoji-bounce">😔</span> Negative
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                
-                <!-- Confidence Bar -->
-                <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-                  <div class="flex justify-between items-center mb-2">
-                    <span class="text-sm font-medium text-gray-600">Confidence Level</span>
-                    <span id="confidenceText" class="text-sm font-bold text-green-600">0%</span>
-                  </div>
-                  <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
-                    <div id="confidenceBar" class="h-full bg-gradient-to-r from-green-400 to-emerald-500 rounded-full transition-all duration-1000 ease-out" style="width: 0%"></div>
-                  </div>
+                <div class="h-3 bg-gray-200 rounded-full overflow-hidden">
+                  <div id="confidenceBar"
+                    class="h-full bg-gradient-to-r from-green-400 to-emerald-500 rounded-full transition-all duration-1000 ease-out"
+                    style="width: 0%"></div>
                 </div>
               </div>
             </div>
-            
-            <!-- Placeholder when no result -->
-            <div id="placeholder" class="hidden lg:flex items-center justify-center animate-fade-in">
-              <div class="text-center text-gray-400">
-                <div class="w-32 h-32 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                  <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
-                  </svg>
-                </div>
-                <p class="font-medium">Your analysis will appear here</p>
-                <p class="text-sm mt-1">Enter a review and click analyze</p>
+          </div>
+
+          <!-- Placeholder when no result -->
+          <div id="placeholder" class="lg:flex items-center justify-center animate-fade-in">
+            <div class="text-center text-gray-400">
+              <div class="w-32 h-32 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
+                <svg class="w-16 h-16 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                    d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                </svg>
               </div>
+              <p class="font-medium">Your analysis will appear here</p>
+              <p class="text-sm mt-1">Enter a review and click analyze</p>
             </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Features Section -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
+        <div class="glass-card rounded-2xl p-6 text-center animate-slide-up" style="animation-delay: 0.2s;">
+          <div
+            class="w-14 h-14 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+            </svg>
+          </div>
+          <h3 class="font-bold text-gray-800 mb-2">Fast Analysis</h3>
+          <p class="text-gray-500 text-sm">Get instant sentiment prediction in milliseconds</p>
+        </div>
+
+        <div class="glass-card rounded-2xl p-6 text-center animate-slide-up" style="animation-delay: 0.3s;">
+          <div
+            class="w-14 h-14 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+            </svg>
+          </div>
+          <h3 class="font-bold text-gray-800 mb-2">AI Powered</h3>
+          <p class="text-gray-500 text-sm">Advanced machine learning model for accuracy</p>
+        </div>
+
+        <div class="glass-card rounded-2xl p-6 text-center animate-slide-up" style="animation-delay: 0.4s;">
+          <div
+            class="w-14 h-14 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
+          </div>
+          <h3 class="font-bold text-gray-800 mb-2">Reliable</h3>
+          <p class="text-gray-500 text-sm">Trained on thousands of Indonesian reviews</p>
+        </div>
+      </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="glass-header border-t border-white/20 mt-auto">
+      <div class="container mx-auto px-6 py-4">
+        <div class="flex flex-col md:flex-row items-center justify-between gap-4">
+          <p class="text-gray-600 text-sm">
+            © 2025 <span class="font-semibold text-green-600">Kelompok Oke Gas</span> - All Rights Reserved
+          </p>
+          <div class="flex items-center gap-4">
+            <span class="text-gray-500 text-sm">Made with</span>
+            <span class="text-red-500 animate-pulse">❤️</span>
+            <span class="text-gray-500 text-sm">using Python & TensorFlow</span>
           </div>
         </div>
-        
-        <!-- Features Section -->
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-8">
-          <div class="glass-card rounded-2xl p-6 text-center animate-slide-up" style="animation-delay: 0.2s;">
-            <div class="w-14 h-14 bg-gradient-to-br from-green-400 to-emerald-500 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
-              </svg>
-            </div>
-            <h3 class="font-bold text-gray-800 mb-2">Fast Analysis</h3>
-            <p class="text-gray-500 text-sm">Get instant sentiment prediction in milliseconds</p>
-          </div>
-          
-          <div class="glass-card rounded-2xl p-6 text-center animate-slide-up" style="animation-delay: 0.3s;">
-            <div class="w-14 h-14 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/>
-              </svg>
-            </div>
-            <h3 class="font-bold text-gray-800 mb-2">AI Powered</h3>
-            <p class="text-gray-500 text-sm">Advanced machine learning model for accuracy</p>
-          </div>
-          
-          <div class="glass-card rounded-2xl p-6 text-center animate-slide-up" style="animation-delay: 0.4s;">
-            <div class="w-14 h-14 bg-gradient-to-br from-purple-400 to-pink-500 rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <svg class="w-7 h-7 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-              </svg>
-            </div>
-            <h3 class="font-bold text-gray-800 mb-2">Reliable</h3>
-            <p class="text-gray-500 text-sm">Trained on thousands of Indonesian reviews</p>
-          </div>
-        </div>
-      </main>
+      </div>
+    </footer>
+  </div>
 
-      <!-- Footer -->
-      <footer class="glass-header border-t border-white/20 mt-auto">
-        <div class="container mx-auto px-6 py-4">
-          <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-            <p class="text-gray-600 text-sm">
-              © 2025 <span class="font-semibold text-green-600">Kelompok Oke Gas</span> - All Rights Reserved
-            </p>
-            <div class="flex items-center gap-4">
-              <span class="text-gray-500 text-sm">Made with</span>
-              <span class="text-red-500 animate-pulse">❤️</span>
-              <span class="text-gray-500 text-sm">using Python & TensorFlow</span>
-            </div>
-          </div>
-        </div>
-      </footer>
-    </div>
+  <script>
+    let posChartInstance = null;
+    let negChartInstance = null;
 
-    <script>
-      let posChartInstance = null;
-      let negChartInstance = null;
+    // Character counter
+    const reviewInput = document.getElementById('reviewInput');
+    const charCount = document.getElementById('charCount');
 
-      // Character counter
-      const reviewInput = document.getElementById('reviewInput');
-      const charCount = document.getElementById('charCount');
-      
-      reviewInput.addEventListener('input', function() {
-        const count = this.value.length;
-        charCount.textContent = `${count}/255`;
-        
-        if (count > 200) {
-          charCount.classList.add('text-orange-500');
-          charCount.classList.remove('text-gray-400');
-        } else {
-          charCount.classList.remove('text-orange-500');
-          charCount.classList.add('text-gray-400');
+    reviewInput.addEventListener('input', function () {
+      const count = this.value.length;
+      charCount.textContent = `${count}/255`;
+
+      if (count > 200) {
+        charCount.classList.add('text-orange-500');
+        charCount.classList.remove('text-gray-400');
+      } else {
+        charCount.classList.remove('text-orange-500');
+        charCount.classList.add('text-gray-400');
+      }
+    });
+
+    // Example buttons
+    document.querySelectorAll('.example-btn').forEach(btn => {
+      btn.addEventListener('click', function () {
+        reviewInput.value = this.textContent.trim();
+        reviewInput.dispatchEvent(new Event('input'));
+        reviewInput.focus();
+      });
+    });
+
+    // Update charts function
+    function updateCharts(positiveValue, negativeValue) {
+      const posPercent = (positiveValue * 100).toFixed(1);
+      const negPercent = (negativeValue * 100).toFixed(1);
+
+      document.getElementById('posText').innerText = posPercent + '%';
+      document.getElementById('negText').innerText = negPercent + '%';
+
+      // Positive Chart
+      const ctxPos = document.getElementById('positiveChart').getContext('2d');
+      if (posChartInstance) posChartInstance.destroy();
+
+      posChartInstance = new Chart(ctxPos, {
+        type: 'doughnut',
+        data: {
+          labels: ['Positive', 'Remaining'],
+          datasets: [{
+            data: [posPercent, 100 - posPercent],
+            backgroundColor: ['#10b981', '#e5e7eb'],
+            borderWidth: 0,
+            cutout: '75%',
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { enabled: false } },
+          animation: { animateScale: true, animateRotate: true, duration: 1200, easing: 'easeOutQuart' }
         }
       });
 
-      // Example buttons
-      document.querySelectorAll('.example-btn').forEach(btn => {
-        btn.addEventListener('click', function() {
-          reviewInput.value = this.textContent.trim();
-          reviewInput.dispatchEvent(new Event('input'));
-          reviewInput.focus();
-        });
+      // Negative Chart
+      const ctxNeg = document.getElementById('negativeChart').getContext('2d');
+      if (negChartInstance) negChartInstance.destroy();
+
+      negChartInstance = new Chart(ctxNeg, {
+        type: 'doughnut',
+        data: {
+          labels: ['Negative', 'Remaining'],
+          datasets: [{
+            data: [negPercent, 100 - negPercent],
+            backgroundColor: ['#ef4444', '#e5e7eb'],
+            borderWidth: 0,
+            cutout: '75%',
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          plugins: { legend: { display: false }, tooltip: { enabled: false } },
+          animation: { animateScale: true, animateRotate: true, duration: 1200, easing: 'easeOutQuart' }
+        }
       });
+    }
 
-      // Update charts function
-      function updateCharts(positiveValue, negativeValue) {
-        const posPercent = (positiveValue * 100).toFixed(1);
-        const negPercent = (negativeValue * 100).toFixed(1);
+    // Show result function
+    function showResult(positiveValue, negativeValue, sentiment) {
+      const resultDiv = document.getElementById('result');
+      const placeholder = document.getElementById('placeholder');
 
-        document.getElementById('posText').innerText = posPercent + '%';
-        document.getElementById('negText').innerText = negPercent + '%';
+      resultDiv.classList.remove('hidden');
+      if (placeholder) placeholder.classList.add('hidden');
 
-        // Positive Chart
-        const ctxPos = document.getElementById('positiveChart').getContext('2d');
-        if (posChartInstance) posChartInstance.destroy();
-
-        posChartInstance = new Chart(ctxPos, {
-          type: 'doughnut',
-          data: {
-            labels: ['Positive', 'Remaining'],
-            datasets: [{
-              data: [posPercent, 100 - posPercent],
-              backgroundColor: ['#10b981', '#e5e7eb'],
-              borderWidth: 0,
-              cutout: '75%',
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false }, tooltip: { enabled: false } },
-            animation: { animateScale: true, animateRotate: true, duration: 1200, easing: 'easeOutQuart' }
-          }
-        });
-
-        // Negative Chart
-        const ctxNeg = document.getElementById('negativeChart').getContext('2d');
-        if (negChartInstance) negChartInstance.destroy();
-
-        negChartInstance = new Chart(ctxNeg, {
-          type: 'doughnut',
-          data: {
-            labels: ['Negative', 'Remaining'],
-            datasets: [{
-              data: [negPercent, 100 - negPercent],
-              backgroundColor: ['#ef4444', '#e5e7eb'],
-              borderWidth: 0,
-              cutout: '75%',
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false }, tooltip: { enabled: false } },
-            animation: { animateScale: true, animateRotate: true, duration: 1200, easing: 'easeOutQuart' }
-          }
-        });
-      }
-
-      // Show result function
-      function showResult(positiveValue, negativeValue, sentiment) {
-        const resultDiv = document.getElementById('result');
-        const placeholder = document.getElementById('placeholder');
-        
-        resultDiv.classList.remove('hidden');
-        if (placeholder) placeholder.classList.add('hidden');
-        
-        // Update sentiment badge
-        const sentimentBadge = document.getElementById('sentimentResult');
-        if (sentiment === 'Positive') {
-          sentimentBadge.innerHTML = `
+      // Update sentiment badge
+      const sentimentBadge = document.getElementById('sentimentResult');
+      if (sentiment === 'Positive') {
+        sentimentBadge.innerHTML = `
             <div class="result-positive rounded-xl p-4">
               <div class="flex items-center justify-center gap-3">
                 <span class="text-4xl emoji-bounce">😊</span>
@@ -548,8 +585,8 @@
               </div>
             </div>
           `;
-        } else {
-          sentimentBadge.innerHTML = `
+      } else {
+        sentimentBadge.innerHTML = `
             <div class="result-negative rounded-xl p-4">
               <div class="flex items-center justify-center gap-3">
                 <span class="text-4xl emoji-bounce">😔</span>
@@ -560,198 +597,216 @@
               </div>
             </div>
           `;
-        }
-        
-        // Update confidence bar
-        const confidence = Math.max(positiveValue, negativeValue) * 100;
-        const confidenceBar = document.getElementById('confidenceBar');
-        const confidenceText = document.getElementById('confidenceText');
-        
-        setTimeout(() => {
-          confidenceBar.style.width = confidence + '%';
-          confidenceText.textContent = confidence.toFixed(1) + '%';
-        }, 100);
-        
-        updateCharts(positiveValue, negativeValue);
       }
 
-      // Loading state
-      function setLoading(loading) {
-        const btn = document.getElementById('predictBtn');
-        const btnText = document.getElementById('btnText');
-        const btnIcon = document.getElementById('btnIcon');
-        
-        if (loading) {
-          btn.disabled = true;
-          btn.classList.add('opacity-75', 'cursor-not-allowed');
-          btnText.textContent = 'Analyzing...';
-          btnIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>';
-          btnIcon.classList.add('animate-spin');
-        } else {
-          btn.disabled = false;
-          btn.classList.remove('opacity-75', 'cursor-not-allowed');
-          btnText.textContent = 'Analyze Sentiment';
-          btnIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>';
-          btnIcon.classList.remove('animate-spin');
-        }
-      }
+      // Update confidence bar
+      const confidence = Math.max(positiveValue, negativeValue) * 100;
+      const confidenceBar = document.getElementById('confidenceBar');
+      const confidenceText = document.getElementById('confidenceText');
 
-      // Improved sentiment detection function
-      function analyzeSentiment(review) {
-        const lowerReview = review.toLowerCase();
-        
-        // Kata-kata positif dan negatif dalam Bahasa Indonesia
-        const positiveWords = ['bagus', 'baik', 'cepat', 'mantap', 'recommended', 'puas', 'ramah', 'sesuai', 
-                              'memuaskan', 'terima kasih', 'sukses', 'hebat', 'keren', 'suka', 'senang',
-                              'responsif', 'profesional', 'berkualitas', 'murah', 'worth it', 'segera'];
-        
-        const negativeWords = ['jelek', 'buruk', 'lambat', 'kecewa', 'rusak', 'tidak sesuai', 'mahal',
-                              'gagal', 'susah', 'problem', 'masalah', 'komplain', 'mengecewakan',
-                              'pelit', 'tidak ramah', 'ketipu', 'menipu', 'penipu', 'scam', 'hoax',
-                              'fake', 'palsu', 'tolong', 'help', 'bosan', 'lelah'];
-        
-        // Hitung kemunculan kata
-        let positiveScore = 0;
-        let negativeScore = 0;
-        
-        positiveWords.forEach(word => {
-          if (lowerReview.includes(word)) {
-            positiveScore++;
-          }
-        });
-        
-        negativeWords.forEach(word => {
-          if (lowerReview.includes(word)) {
-            negativeScore++;
-          }
-        });
-        
-        // Debug logging
-        console.log('Positive words found:', positiveScore);
-        console.log('Negative words found:', negativeScore);
-        
-        // Logika penentuan sentimen yang lebih baik
-        let randomPos, randomNeg, sentiment;
-        
-        // Jika ada kata positif dan TIDAK ada kata negatif → POSITIF TINGGI
-        if (positiveScore > 0 && negativeScore === 0) {
-          randomPos = 0.8 + (Math.random() * 0.15); // 80-95%
+      setTimeout(() => {
+        confidenceBar.style.width = confidence + '%';
+        confidenceText.textContent = confidence.toFixed(1) + '%';
+      }, 100);
+
+      updateCharts(positiveValue, negativeValue);
+    }
+
+    // Loading state
+    function setLoading(loading) {
+      const btn = document.getElementById('predictBtn');
+      const btnText = document.getElementById('btnText');
+      const btnIcon = document.getElementById('btnIcon');
+
+      if (loading) {
+        btn.disabled = true;
+        btn.classList.add('opacity-75', 'cursor-not-allowed');
+        btnText.textContent = 'Analyzing...';
+        btnIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"/>';
+        btnIcon.classList.add('animate-spin');
+      } else {
+        btn.disabled = false;
+        btn.classList.remove('opacity-75', 'cursor-not-allowed');
+        btnText.textContent = 'Analyze Sentiment';
+        btnIcon.innerHTML = '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>';
+        btnIcon.classList.remove('animate-spin');
+      }
+    }
+
+    // Improved sentiment detection function
+    function analyzeSentiment(review) {
+      const lowerReview = review.toLowerCase();
+
+      // Kata-kata positif dan negatif dalam Bahasa Indonesia
+      const positiveWords = ['bagus', 'baik', 'cepat', 'mantap', 'recommended', 'puas', 'ramah', 'sesuai',
+        'memuaskan', 'terima kasih', 'sukses', 'hebat', 'keren', 'suka', 'senang',
+        'responsif', 'profesional', 'berkualitas', 'murah', 'worth it', 'segera'];
+
+      const negativeWords = ['jelek', 'buruk', 'lambat', 'kecewa', 'rusak', 'tidak sesuai', 'mahal',
+        'gagal', 'susah', 'problem', 'masalah', 'komplain', 'mengecewakan',
+        'pelit', 'tidak ramah', 'ketipu', 'menipu', 'penipu', 'scam', 'hoax',
+        'fake', 'palsu', 'tolong', 'help', 'bosan', 'lelah'];
+
+      // Hitung kemunculan kata
+      let positiveScore = 0;
+      let negativeScore = 0;
+
+      positiveWords.forEach(word => {
+        if (lowerReview.includes(word)) {
+          positiveScore++;
+        }
+      });
+
+      negativeWords.forEach(word => {
+        if (lowerReview.includes(word)) {
+          negativeScore++;
+        }
+      });
+
+      // Debug logging
+      console.log('Positive words found:', positiveScore);
+      console.log('Negative words found:', negativeScore);
+
+      // Logika penentuan sentimen yang lebih baik
+      let randomPos, randomNeg, sentiment;
+
+      // Jika ada kata positif dan TIDAK ada kata negatif → POSITIF TINGGI
+      if (positiveScore > 0 && negativeScore === 0) {
+        randomPos = 0.8 + (Math.random() * 0.15); // 80-95%
+        randomNeg = 1 - randomPos;
+        sentiment = 'Positive';
+      }
+      // Jika ada kata negatif dan TIDAK ada kata positif → NEGATIF TINGGI
+      else if (negativeScore > 0 && positiveScore === 0) {
+        randomNeg = 0.8 + (Math.random() * 0.15); // 80-95%
+        randomPos = 1 - randomNeg;
+        sentiment = 'Negative';
+      }
+      // Jika ada keduanya (campuran) atau tidak ada keduanya
+      else {
+        // Hitung skor net
+        const netScore = positiveScore - negativeScore;
+
+        if (netScore > 0) {
+          // Lebih banyak positif
+          randomPos = 0.6 + (Math.random() * 0.2); // 60-80%
           randomNeg = 1 - randomPos;
           sentiment = 'Positive';
-        }
-        // Jika ada kata negatif dan TIDAK ada kata positif → NEGATIF TINGGI
-        else if (negativeScore > 0 && positiveScore === 0) {
-          randomNeg = 0.8 + (Math.random() * 0.15); // 80-95%
+        } else if (netScore < 0) {
+          // Lebih banyak negatif
+          randomNeg = 0.6 + (Math.random() * 0.2); // 60-80%
           randomPos = 1 - randomNeg;
           sentiment = 'Negative';
+        } else {
+          // Netral/sama/atau tidak ada kata yang terdeteksi
+          // Berikan probabilitas yang seimbang
+          randomPos = 0.4 + (Math.random() * 0.2); // 40-60%
+          randomNeg = 1 - randomPos;
+          sentiment = randomPos > 0.5 ? 'Positive' : 'Negative';
         }
-        // Jika ada keduanya (campuran) atau tidak ada keduanya
-        else {
-          // Hitung skor net
-          const netScore = positiveScore - negativeScore;
-          
-          if (netScore > 0) {
-            // Lebih banyak positif
-            randomPos = 0.6 + (Math.random() * 0.2); // 60-80%
-            randomNeg = 1 - randomPos;
-            sentiment = 'Positive';
-          } else if (netScore < 0) {
-            // Lebih banyak negatif
-            randomNeg = 0.6 + (Math.random() * 0.2); // 60-80%
-            randomPos = 1 - randomNeg;
-            sentiment = 'Negative';
-          } else {
-            // Netral/sama/atau tidak ada kata yang terdeteksi
-            // Berikan probabilitas yang seimbang
-            randomPos = 0.4 + (Math.random() * 0.2); // 40-60%
-            randomNeg = 1 - randomPos;
-            sentiment = randomPos > 0.5 ? 'Positive' : 'Negative';
-          }
-        }
-        
-        return { randomPos, randomNeg, sentiment };
       }
 
-      // Reset function
-      function resetForm() {
-        document.getElementById('result').classList.add('hidden');
-        document.getElementById('placeholder')?.classList.remove('hidden');
-        document.getElementById('reviewInput').value = '';
-        charCount.textContent = '0/255';
-        
-        if (posChartInstance) posChartInstance.destroy();
-        if (negChartInstance) negChartInstance.destroy();
-        
-        document.getElementById('confidenceBar').style.width = '0%';
-        document.getElementById('confidenceText').textContent = '0%';
-      }
+      return { randomPos, randomNeg, sentiment };
+    }
 
-      // Analyze button click
-      document.getElementById('predictBtn').addEventListener('click', function() {
-        const review = document.getElementById('reviewInput').value.trim();
-        
-        if (!review) {
-          // Shake animation for empty input
-          reviewInput.classList.add('border-red-500');
-          reviewInput.style.animation = 'shake 0.5s ease-in-out';
-          setTimeout(() => {
-            reviewInput.classList.remove('border-red-500');
-            reviewInput.style.animation = '';
-          }, 500);
-          return;
-        }
-        
-        setLoading(true);
-        
-        // Simulasi API call dengan analisis sentimen yang lebih baik
+    // Reset function
+    function resetForm() {
+      document.getElementById('result').classList.add('hidden');
+      document.getElementById('placeholder')?.classList.remove('hidden');
+      document.getElementById('reviewInput').value = '';
+      document.getElementById('downloadBtn').classList.add('hidden');
+      charCount.textContent = '0/255';
+
+      if (posChartInstance) posChartInstance.destroy();
+      if (negChartInstance) negChartInstance.destroy();
+
+      document.getElementById('confidenceBar').style.width = '0%';
+      document.getElementById('confidenceText').textContent = '0%';
+    }
+
+    // Download CSV
+    document.getElementById('download').addEventListener('click', function () {
+      const downloadLink = document.createElement('a');
+
+      downloadLink.href = '/data/tokopedia_reviews_raw.csv';
+      downloadLink.download = 'raw-reviews.csv';
+
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    });
+
+    // Analyze button click
+    document.getElementById('predictBtn').addEventListener('click', function () {
+      const review = document.getElementById('reviewInput').value.trim();
+      const placeholder = document.getElementById('placeholder');
+      const downloadBtn = document.getElementById('downloadBtn');
+
+      if (!review) {
+        // Shake animation for empty input
+        reviewInput.classList.add('border-red-500');
+        reviewInput.style.animation = 'shake 0.5s ease-in-out';
         setTimeout(() => {
-          const result = analyzeSentiment(review);
-          
-          showResult(result.randomPos, result.randomNeg, result.sentiment);
-          setLoading(false);
-        }, 800); // Waktu lebih cepat karena hanya simulasi
-        
-        /* 
-        // UNCOMMENT UNTUK API ASLI:
-        fetch('/predict', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ review: review })
-        })
-        .then(response => response.json())
-        .then(data => {
-          showResult(data.positive, data.negative, data.sentiment);
-          setLoading(false);
-        })
-        .catch(error => {
-          console.error('Error:', error);
-          alert('Failed to analyze. Please try again.');
-          setLoading(false);
-        });
-        */
+          reviewInput.classList.remove('border-red-500');
+          reviewInput.style.animation = '';
+        }, 500);
+        return;
+      }
+
+      setLoading(true);
+
+      // Simulasi API call dengan analisis sentimen yang lebih baik
+      setTimeout(() => {
+        const result = analyzeSentiment(review);
+        placeholder.classList.add('hidden');
+        downloadBtn.classList.remove('hidden');
+
+        showResult(result.randomPos, result.randomNeg, result.sentiment);
+        setLoading(false);
+      }, 800); // Waktu lebih cepat karena hanya simulasi
+
+      /* 
+      // UNCOMMENT UNTUK API ASLI:
+      fetch('/predict', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ review: review })
+      })
+      .then(response => response.json())
+      .then(data => {
+        showResult(data.positive, data.negative, data.sentiment);
+        setLoading(false);
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('Failed to analyze. Please try again.');
+        setLoading(false);
       });
+      */
+    });
 
-      // Reset button click
-      document.getElementById('resetBtn').addEventListener('click', resetForm);
+    // Reset button click
+    document.getElementById('resetBtn').addEventListener('click', resetForm);
 
-      // Enter key support
-      reviewInput.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && !e.shiftKey) {
-          e.preventDefault();
-          document.getElementById('predictBtn').click();
-        }
-      });
+    // Enter key support
+    reviewInput.addEventListener('keydown', function (e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        document.getElementById('predictBtn').click();
+      }
+    });
 
-      // Add shake animation keyframes
-      const style = document.createElement('style');
-      style.textContent = `
+    // Add shake animation keyframes
+    const style = document.createElement('style');
+    style.textContent = `
         @keyframes shake {
           0%, 100% { transform: translateX(0); }
           25% { transform: translateX(-10px); }
           75% { transform: translateX(10px); }
         }
       `;
-      document.head.appendChild(style);
-    </script>
-  </body>
+    document.head.appendChild(style);
+  </script>
+</body>
+
 </html>

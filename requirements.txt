@@ -7,4 +7,3 @@ matplotlib
 seaborn
 google-play-scraper
 flask
-wordcloud

@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, send_from_directory, request, jsonify
 import pickle
 import os
 from src.preprocessor import preprocess_text
@@ -77,6 +77,18 @@ def predict():
         'positive_prob': round(pos_prob, 2),
         'negative_prob': round(neg_prob, 2)
     })
+
+@app.route('/data/tokopedia_reviews_raw.csv')
+def download_csv():
+    try:
+        return send_from_directory(
+            directory='data',
+            path='tokopedia_reviews_raw.csv',
+            as_attachment=True,
+            mimetype='text/csv'
+        )
+    except FileNotFoundError:
+        return "Error: File not found.", 404
 
 if __name__ == '__main__':
     load_assets()
